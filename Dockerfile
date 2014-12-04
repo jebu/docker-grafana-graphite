@@ -1,4 +1,4 @@
-FROM     ubuntu:14.04
+FROM     ubuntu:14.10
 RUN      apt-get -y update
 RUN      apt-get -y upgrade
 
@@ -38,19 +38,16 @@ RUN     pip install --install-option="--prefix=/var/lib/graphite" --install-opti
 RUN     mkdir /src                                                                                                                      &&\
         git clone https://github.com/etsy/statsd.git /src/statsd                                                                        &&\
         cd /src/statsd                                                                                                                  &&\ 
-        git checkout v0.7.2                                                                                                             &&\
-        sed -i -e "s|.replace(/\[^a-zA-Z_\\\\-0-9\\\\.]/g, '');|.replace(/[^a-zA-Z_\\\\-0-9\\\\.\\\\%]/g, '');|" /src/statsd/stats.js
+        git checkout v0.7.2
 
 
 # Install & Patch Grafana
 RUN     mkdir /src/grafana                                                                                                              &&\
         git clone https://github.com/grafana/grafana.git /src/grafana                                                                   &&\
         cd /src/grafana                                                                                                                 &&\
-        git checkout v1.7.0
+        git checkout v1.9.0
 
-ADD     ./grafana/correctly-show-urlencoded-metrics.patch /src/grafana/correctly-show-urlencoded-metrics.patch
-RUN     git apply /src/grafana/correctly-show-urlencoded-metrics.patch --directory=/src/grafana                                         &&\
-        cd /src/grafana                                                                                                                 &&\
+RUN     cd /src/grafana                                                                                                                 &&\
         npm install                                                                                                                     &&\
         npm install -g grunt-cli                                                                                                        &&\
         grunt build 
